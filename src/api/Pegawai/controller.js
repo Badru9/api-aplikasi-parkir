@@ -36,9 +36,7 @@ const findPegawaiByID = async (req, res) => {
 };
 
 const insertPegawai = async (req, res) => {
-  const data = req.body;
-  const { nama, alamat, tanggal_lahir, username, password } = data;
-  console.log(data);
+  const { nama, alamat, tanggal_lahir, username, password } = await req.body;
 
   try {
     const sql = `INSERT INTO pegawai (nama, alamat, tanggal_lahir, username, password) VALUE ('${nama}','${alamat}','${tanggal_lahir}','${username}','${password}')`;
@@ -59,8 +57,8 @@ const insertPegawai = async (req, res) => {
 };
 
 const updatePegawai = async (req, res) => {
-  const data = req.body;
-  const { id, nama, alamat, tanggal_lahir, username, password } = data;
+  const { id, nama, alamat, tanggal_lahir, username, password } =
+    await req.body;
 
   try {
     const sql = `UPDATE pegawai SET nama = '${nama}', alamat = '${alamat}', tanggal_lahir = '${tanggal_lahir}', username = '${username}', password = '${password}' WHERE id = '${id}'`;
