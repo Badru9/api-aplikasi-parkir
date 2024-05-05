@@ -61,12 +61,11 @@ const insertCustomer = async (req, res) => {
   });
 };
 
-const deleteCustomer = async (req, res) => {
+const deleteCustomerByID = async (req, res) => {
   const data = req.body;
-  const { id, jam_keluar } = data;
+  const { id } = data;
   console.log(req.body);
-  const sql = `UPDATE customers SET jam_keluar = '${jam_keluar}' WHERE id = '${id}'`;
-  // const sql = `DELETE FROM customers WHERE id = '${id}'`;
+  const sql = `DELETE FROM customers WHERE id = '${id}'`;
   const deleteQuery = database.query(sql, req, (err, result) => {
     if (err) {
       console.log(err);
@@ -77,9 +76,29 @@ const deleteCustomer = async (req, res) => {
   });
 };
 
+const updateBiaya = async (req, res) => {
+  const data = await req.body;
+  const { id, biaya } = data;
+  console.log(req.body);
+  const sql = `UPDATE customers SET biaya = '${biaya}' WHERE id = '${id}'`;
+  database.query(sql, req, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+
+    console.log("test", result);
+
+    res.status(201).json({
+      message: "Successfully insert biaya customers",
+      data: result,
+    });
+  });
+};
+
 module.exports = {
   findCustomer,
   findCustomerByID,
   insertCustomer,
-  deleteCustomer,
+  deleteCustomerByID,
+  updateBiaya,
 };
