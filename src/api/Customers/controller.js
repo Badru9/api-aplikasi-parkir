@@ -78,9 +78,9 @@ const deleteCustomerByID = async (req, res) => {
 
 const updateBiaya = async (req, res) => {
   const data = await req.body;
-  const { id, biaya } = data;
+  const { plat_no, biaya } = data;
   console.log(req.body);
-  const sql = `UPDATE customers SET biaya = '${biaya}' WHERE id = '${id}'`;
+  const sql = `UPDATE customers SET biaya = '${biaya}' WHERE plat_no = '${plat_no}'`;
   database.query(sql, req, (err, result) => {
     if (err) {
       console.log(err);
