@@ -20,9 +20,12 @@ const findCustomer = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
-const findCustomerByID = async (req, res) => {
+
+const findCustomerByPlatNo = async (req, res) => {
+  console.log("req params", req.params);
+
   try {
-    const sql = `SELECT * FROM customers WHERE id = '${req.params.id}'`;
+    const sql = `SELECT * FROM customers WHERE plat_no = '${req.params.plat_no}'`;
     database.query(sql, (err, result) => {
       if (err) {
         console.log(err);
@@ -30,7 +33,7 @@ const findCustomerByID = async (req, res) => {
 
       console.log(result);
       res.status(200).json({
-        message: "Successfully get customers data by ID",
+        message: "Successfully get customers data by plat_no",
         data: result,
       });
     });
@@ -78,9 +81,9 @@ const deleteCustomerByID = async (req, res) => {
 
 const updateBiaya = async (req, res) => {
   const data = await req.body;
-  const { plat_no, biaya } = data;
-  console.log(req.body);
-  const sql = `UPDATE customers SET biaya = '${biaya}' WHERE plat_no = '${plat_no}'`;
+  const { plat_no, biaya, jam_keluar } = data;
+  console.log("update data biaya", data);
+  const sql = `UPDATE customers SET biaya = '${biaya}', jam_keluar = '${jam_keluar}' WHERE plat_no = '${plat_no}'`;
   database.query(sql, req, (err, result) => {
     if (err) {
       console.log(err);
@@ -97,7 +100,7 @@ const updateBiaya = async (req, res) => {
 
 module.exports = {
   findCustomer,
-  findCustomerByID,
+  findCustomerByPlatNo,
   insertCustomer,
   deleteCustomerByID,
   updateBiaya,
