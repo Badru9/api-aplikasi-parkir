@@ -47,17 +47,21 @@ const findCustomerByPlatNo = async (req, res) => {
 const insertCustomer = async (req, res) => {
   const data = await req.body;
 
-  console.log("data", data.id);
-
-  const sql = `INSERT INTO customers ( id, plat_no, jam_masuk ) VALUES ( '${data.id}', '${data.plat_no}', '${data.jam_masuk}' )`;
+  const sql = `INSERT INTO customers ( plat_no, jam_masuk ) VALUES ( '${data.plat_no}', '${data.jam_masuk}' )`;
   database.query(sql, req, (err, result) => {
     if (err) {
       console.log(err);
+      res.json({
+        success: false,
+        message: "Kendaraan sudah masuk",
+      });
+      return;
     }
 
     console.log("test", result);
 
     res.status(201).json({
+      success: true,
       message: "Successfully insert customers data",
       data: result,
     });
@@ -69,13 +73,12 @@ const deleteCustomerByID = async (req, res) => {
   const { id } = data;
   console.log(req.body);
   const sql = `DELETE FROM customers WHERE id = '${id}'`;
-  const deleteQuery = database.query(sql, req, (err, result) => {
+  database.query(sql, req, (err, result) => {
     if (err) {
       console.log(err);
     }
     console.log(result);
-
-    return deleteQuery;
+    console.log("Data terhapus");
   });
 };
 
