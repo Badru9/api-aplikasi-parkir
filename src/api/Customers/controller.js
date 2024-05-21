@@ -8,7 +8,6 @@ const findCustomer = async (req, res) => {
         console.log(err);
       }
 
-      console.log(result);
       res.status(200).json({
         message: "Successfully get customers data",
         data: result,
@@ -31,7 +30,6 @@ const findCustomerByPlatNo = async (req, res) => {
         console.log(err);
       }
 
-      console.log(result);
       res.status(200).json({
         message: "Successfully get customers data by plat_no",
         data: result,
@@ -58,8 +56,6 @@ const insertCustomer = async (req, res) => {
       return;
     }
 
-    console.log("test", result);
-
     res.status(201).json({
       success: true,
       message: "Successfully insert customers data",
@@ -77,8 +73,6 @@ const deleteCustomerByID = async (req, res) => {
     if (err) {
       console.log(err);
     }
-    console.log(result);
-    console.log("Data terhapus");
   });
 };
 
@@ -91,8 +85,6 @@ const updateBiaya = async (req, res) => {
     if (err) {
       console.log(err);
     }
-
-    console.log("test", result);
 
     res.status(201).json({
       message: "Successfully insert biaya customers",
