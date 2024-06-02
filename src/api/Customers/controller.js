@@ -8,7 +8,6 @@ const findCustomer = async (req, res) => {
         console.log(err);
       }
 
-      // console.log(result);
       res.status(200).json({
         message: "Successfully get customers data",
         data: result,
@@ -31,7 +30,6 @@ const findCustomerByPlatNo = async (req, res) => {
         console.log(err);
       }
 
-      console.log(result);
       res.status(200).json({
         message: "Successfully get customers data by plat_no",
         data: result,
@@ -47,17 +45,19 @@ const findCustomerByPlatNo = async (req, res) => {
 const insertCustomer = async (req, res) => {
   const data = await req.body;
 
-  console.log("data", data.id);
-
-  const sql = `INSERT INTO customers ( id, plat_no, jam_masuk ) VALUES ( '${data.id}', '${data.plat_no}', '${data.jam_masuk}' )`;
+  const sql = `INSERT INTO customers ( plat_no, jam_masuk ) VALUES ( '${data.plat_no}', '${data.jam_masuk}' )`;
   database.query(sql, req, (err, result) => {
     if (err) {
       console.log(err);
+      res.json({
+        success: false,
+        message: "Kendaraan sudah masuk",
+      });
+      return;
     }
 
-    console.log("test", result);
-
     res.status(201).json({
+      success: true,
       message: "Successfully insert customers data",
       data: result,
     });
@@ -69,13 +69,10 @@ const deleteCustomerByID = async (req, res) => {
   const { id } = data;
   // console.log(req.body);
   const sql = `DELETE FROM customers WHERE id = '${id}'`;
-  const deleteQuery = database.query(sql, req, (err, result) => {
+  database.query(sql, req, (err, result) => {
     if (err) {
       console.log(err);
     }
-    console.log(result);
-
-    return deleteQuery;
   });
 };
 
@@ -88,8 +85,6 @@ const updateBiaya = async (req, res) => {
     if (err) {
       console.log(err);
     }
-
-    // console.log("test", result);
 
     res.status(201).json({
       message: "Successfully insert biaya customers",
