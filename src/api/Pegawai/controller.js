@@ -1,4 +1,5 @@
 const database = require("../database/index");
+const bycrypt = require("bcrypt");
 
 const findPegawai = async (req, res) => {
   const sql = "SELECT * FROM pegawai";
@@ -6,14 +7,30 @@ const findPegawai = async (req, res) => {
     if (err) {
       console.log(err);
     }
+
+    const data = result.map((data) => {
+      const hashedPassword = bycrypt.hashSync(data.password, 10);
+      return {
+        id: data.id,
+        nama: data.nama,
+        email: data.email,
+        alamat: data.alamat,
+        tanggal_lahir: data.tanggal_lahir,
+        username: data.username,
+        password: hashedPassword,
+      };
+    });
+
     res.status(200).json({
       message: "Successfully get pegawai data",
-      data: result,
+      data: data,
     });
   });
 };
 
 const findPegawaiByID = async (req, res) => {
+  const hashedPassword = bycrypt.hash(req.body.password, 10);
+
   try {
     const sql = `SELECT * FROM pegawai WHERE id = '${req.params.id}'`;
     database.query(sql, (err, result) => {
@@ -21,10 +38,21 @@ const findPegawaiByID = async (req, res) => {
         console.log(err);
       }
 
-      console.log(result);
+      const data = result.map((data) => {
+        return {
+          id: data.id,
+          nama: data.nama,
+          email: data.email,
+          alamat: data.alamat,
+          tanggal_lahir: data.tanggal_lahir,
+          username: data.username,
+          password: hashedPassword,
+        };
+      });
+
       res.status(200).json({
         message: "Successfully get pegawai data by ID",
-        data: result,
+        data: data,
       });
     });
   } catch (error) {
@@ -38,6 +66,9 @@ const findPegawaiByID = async (req, res) => {
 const insertPegawai = async (req, res) => {
   const { nama, email, alamat, tanggal_lahir, username, password } =
     await req.body;
+
+  const salt = await bycrypt.genSalt(10);
+  const hashedPassword = await bycrypt.hash(password, salt);
 
   try {
     const sql = `INSERT INTO pegawai (nama, email, alamat, tanggal_lahir, username, password) VALUE ('${nama}','${email}','${alamat}','${tanggal_lahir}','${username}','${password}')`;
