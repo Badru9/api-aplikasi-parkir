@@ -9,15 +9,17 @@ const findPegawai = async (req, res) => {
     }
 
     const data = result.map((data) => {
+      console.log("data", data);
       const hashedPassword = bycrypt.hashSync(data.password, 10);
       return {
         id: data.id,
+        role: data.role,
         nama: data.nama,
         email: data.email,
         alamat: data.alamat,
         tanggal_lahir: data.tanggal_lahir,
         username: data.username,
-        password: hashedPassword,
+        password: data.role === "Super Admin" ? hashedPassword : data.password,
       };
     });
 
@@ -41,12 +43,14 @@ const findPegawaiByID = async (req, res) => {
       const data = result.map((data) => {
         return {
           id: data.id,
+          role: data.role,
           nama: data.nama,
           email: data.email,
           alamat: data.alamat,
           tanggal_lahir: data.tanggal_lahir,
           username: data.username,
-          password: hashedPassword,
+          password:
+            data.role === "Super Admin" ? hashedPassword : data.password,
         };
       });
 
@@ -64,14 +68,11 @@ const findPegawaiByID = async (req, res) => {
 };
 
 const insertPegawai = async (req, res) => {
-  const { nama, email, alamat, tanggal_lahir, username, password } =
+  const { role, nama, email, alamat, tanggal_lahir, username, password } =
     await req.body;
 
-  const salt = await bycrypt.genSalt(10);
-  const hashedPassword = await bycrypt.hash(password, salt);
-
   try {
-    const sql = `INSERT INTO pegawai (nama, email, alamat, tanggal_lahir, username, password) VALUE ('${nama}','${email}','${alamat}','${tanggal_lahir}','${username}','${password}')`;
+    const sql = `INSERT INTO pegawai (role, nama, email, alamat, tanggal_lahir, username, password) VALUE ('${role}','${nama}','${email}','${alamat}','${tanggal_lahir}','${username}','${password}')`;
 
     database.query(sql, (err, result) => {
       if (err) {
@@ -89,16 +90,20 @@ const insertPegawai = async (req, res) => {
 };
 
 const updatePegawai = async (req, res) => {
-  const { id, nama, email, alamat, tanggal_lahir, username, password } =
+  const { id, role, nama, email, alamat, tanggal_lahir, username, password } =
     await req.body;
 
+  console.log("req fe", req.body);
+
   try {
-    const sql = `UPDATE pegawai SET nama = '${nama}', email = '${email}', alamat = '${alamat}', tanggal_lahir = '${tanggal_lahir}', username = '${username}', password = '${password}' WHERE id = '${id}'`;
+    const sql = `UPDATE pegawai SET role = '${role}', nama = '${nama}', email = '${email}', alamat = '${alamat}', tanggal_lahir = '${tanggal_lahir}', username = '${username}', password = '${password}' WHERE id = '${id}'`;
 
     database.query(sql, (err, result) => {
       if (err) {
         console.log(err);
       }
+
+      console.log(result);
 
       res.status(200).json({
         message: "Update data pegawai berhasil",

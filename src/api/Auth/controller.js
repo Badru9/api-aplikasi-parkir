@@ -12,9 +12,12 @@ const loginPegawai = async (req, res) => {
       console.log("error login", err);
     }
 
+    console.log(result);
+
     const newData = result.map((data) => {
       return {
         id: data.id,
+        role: data.role,
         nama: data.nama,
         username: data.username,
         alamat: data.alamat,
