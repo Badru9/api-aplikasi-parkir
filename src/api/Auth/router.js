@@ -2,8 +2,8 @@ const express = require("express");
 
 const router = express.Router();
 
-const { loginPegawai } = require("./controller");
+const { login } = require("./controller");
 
-router.post("/login-pegawai", loginPegawai);
+router.post("/login", login);
 
 module.exports = router;

@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id        String   @id @unique @default(uuid())
+  name      String   @unique
+  trash     Int      @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(3)
+  Admin     Admin[]
+}
+
+model Pengguna {
+  id           String    @id @unique @default(uuid())
+  licensePlate String    @unique
+  timeIn       DateTime  @default(now())
+  timeOut      DateTime?
+  cost         Int?      @default(0)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @db.Timestamptz(3)
+  trash        Int       @default(0)
+}
+
+model Admin {
+  id        String   @id @unique @default(uuid())
+  name      String
+  phone     String   @unique
+  email     String   @unique
+  username  String
+  password  String
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(3)
+  trash     Int      @default(0)
+}
+
+model Transaction {
+  id              String   @id @unique @default(uuid())
+  transactionCode String   @unique
+  customerId      String
+  operatorId      String
+  date            String
+  cost            Int
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz(3)
+  trash           Int      @default(0)
+}
