@@ -38,6 +38,7 @@ model Admin {
   name      String
   phone     String   @unique
   email     String   @unique
+  image     String?
   username  String
   password  String
   roleId    String

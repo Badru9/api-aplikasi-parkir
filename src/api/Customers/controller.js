@@ -5,20 +5,23 @@ module.exports = {
     try {
       const data = req.body;
 
-      const newData = {
-        licensePlate: data.licensePlate,
-        timeIn: data.timeIn,
-      };
-
-      console.log("customer data", newData);
+      console.log("data dari fe", data);
 
       const customers = await prisma.pengguna.create({
-        data: newData,
+        data,
       });
       console.log("data customers", customers);
-      res.status(200).json(customers);
+      res.status(201).json({
+        success: true,
+        message: "Customer berhasil dimasukkan",
+        data: customers,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.log("gagal");
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
   },
 

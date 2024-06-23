@@ -6,6 +6,8 @@ module.exports = {
     try {
       const { email, password } = req.body;
 
+      console.log(email, password);
+
       const user = await prisma.admin.findUnique({
         where: {
           email,
@@ -24,6 +26,8 @@ module.exports = {
       }
 
       const checkPassword = await compare(password, user.password);
+
+      console.log(checkPassword);
 
       if (!checkPassword) {
         res.status(401).json({

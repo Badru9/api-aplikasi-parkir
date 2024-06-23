@@ -1,147 +1,11 @@
-// const database = require("../database/index");
-// const bycrypt = require("bcrypt");
-
-// const findPegawai = async (req, res) => {
-//   const sql = "SELECT * FROM pegawai";
-//   database.query(sql, (err, result) => {
-//     if (err) {
-//       console.log(err);
-//     }
-
-//     const data = result.map((data) => {
-//       console.log("data", data);
-//       const hashedPassword = bycrypt.hashSync(data.password, 10);
-//       return {
-//         id: data.id,
-//         role: data.role,
-//         nama: data.nama,
-//         email: data.email,
-//         alamat: data.alamat,
-//         tanggal_lahir: data.tanggal_lahir,
-//         username: data.username,
-//         password: data.role === "Super Admin" ? hashedPassword : data.password,
-//       };
-//     });
-
-//     res.status(200).json({
-//       message: "Successfully get pegawai data",
-//       data: data,
-//     });
-//   });
-// };
-
-// const findPegawaiByID = async (req, res) => {
-//   const hashedPassword = bycrypt.hash(req.body.password, 10);
-
-//   try {
-//     const sql = `SELECT * FROM pegawai WHERE id = '${req.params.id}'`;
-//     database.query(sql, (err, result) => {
-//       if (err) {
-//         console.log(err);
-//       }
-
-//       const data = result.map((data) => {
-//         return {
-//           id: data.id,
-//           role: data.role,
-//           nama: data.nama,
-//           email: data.email,
-//           alamat: data.alamat,
-//           tanggal_lahir: data.tanggal_lahir,
-//           username: data.username,
-//           password:
-//             data.role === "Super Admin" ? hashedPassword : data.password,
-//         };
-//       });
-
-//       res.status(200).json({
-//         message: "Successfully get pegawai data by ID",
-//         data: data,
-//       });
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       message: "Internal server error",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// const insertPegawai = async (req, res) => {
-//   const { role, nama, email, alamat, tanggal_lahir, username, password } =
-//     await req.body;
-
-//   try {
-//     const sql = `INSERT INTO pegawai (role, nama, email, alamat, tanggal_lahir, username, password) VALUE ('${role}','${nama}','${email}','${alamat}','${tanggal_lahir}','${username}','${password}')`;
-
-//     database.query(sql, (err, result) => {
-//       if (err) {
-//         console.log(err);
-//       }
-
-//       res.status(200).json({
-//         message: "Insert data success",
-//         data: result,
-//       });
-//     });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
-// const updatePegawai = async (req, res) => {
-//   const { id, role, nama, email, alamat, tanggal_lahir, username, password } =
-//     await req.body;
-
-//   console.log("req fe", req.body);
-
-//   try {
-//     const sql = `UPDATE pegawai SET role = '${role}', nama = '${nama}', email = '${email}', alamat = '${alamat}', tanggal_lahir = '${tanggal_lahir}', username = '${username}', password = '${password}' WHERE id = '${id}'`;
-
-//     database.query(sql, (err, result) => {
-//       if (err) {
-//         console.log(err);
-//       }
-
-//       console.log(result);
-
-//       res.status(200).json({
-//         message: "Update data pegawai berhasil",
-//         data: result.info,
-//       });
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// const deletePegawaiByID = async (req, res) => {
-//   const sql = `DELETE FROM pegawai WHERE id = '${req.params.id}'`;
-
-//   database.query(sql, (err) => {
-//     if (err) console.log(err);
-
-//     res.status(200).json({
-//       message: "Delete pegawai data success",
-//     });
-//   });
-// };
-
-// module.exports = {
-//   findPegawai,
-//   findPegawaiByID,
-//   insertPegawai,
-//   updatePegawai,
-//   deletePegawaiByID,
-// };
-
 const prisma = require("../database");
 const bcrypt = require("bcrypt");
+// const multer = require("multer");
+// const path = require("path");
 
 module.exports = {
   get: async (req, res) => {
     const id = await req.params.id;
-    const data = await req.body;
     console.log("id", id);
 
     try {
@@ -216,12 +80,35 @@ module.exports = {
   update: async (req, res) => {
     const id = req.params.id;
     const data = req.body;
+
+    console.log("id", id);
+    console.log("update admin", data);
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(data.password, salt);
+    console.log(hashedPassword);
+
+    const newData = {
+      ...data,
+      password: hashedPassword,
+    };
+
+    console.log("new Data", newData);
+
     try {
       const pegawai = await prisma.admin.update({
         where: {
           id,
         },
-        data,
+
+        data: {
+          ...newData,
+          role: {
+            update: {
+              name: data.role.name,
+            },
+          },
+        },
       });
 
       res.status(200).json({
@@ -232,6 +119,56 @@ module.exports = {
       console.log(error);
     }
   },
+
+  // updateImage: async (req, res) => {
+  //   const id = req.params.id;
+  //   const data = req.file;
+
+  //   console.log("data image", data);
+  //   const formData = new FormData();
+
+  //   formData.append("image", data);
+
+  //   console.log("form data", formData);
+
+  //   console.log(id);
+
+  //   const storage = multer.diskStorage({
+  //     destination: function (req, file, cb) {
+  //       const ext = file.originalname.split(".")[1];
+
+  //       cb(null, `./public/uploads/${id}.${ext}`);
+  //     },
+  //     filename: function (req, file, cb) {
+  //       cb(null, file.originalname);
+  //     },
+  //   });
+
+  //   const upload = multer({
+  //     storage: storage,
+  //   });
+
+  //   console.log("upload", upload);
+
+  //   console.log("update image", data);
+  //   // try {
+  //   //   const pegawai = await prisma.admin.update({
+  //   //     where: {
+  //   //       id,
+  //   //     },
+  //   //     data: {
+  //   //       image: data.image,
+  //   //     },
+  //   //   });
+
+  //   //   res.status(200).json({
+  //   //     message: "Image has been updated",
+  //   //     data: pegawai,
+  //   //   });
+  //   // } catch (error) {
+  //   //   console.log(error);
+  //   // }
+  // },
 
   destroy: async (req, res) => {
     const id = req.params.id;
