@@ -26,46 +26,53 @@ module.exports = {
   },
 
   get: async (req, res) => {
-    const id = req.params.id;
+    const { licensePlate, trash } = req.query;
 
-    console.log(id);
+    console.log("trash", trash);
 
-    if (id) {
+    if (licensePlate) {
       const customers = await prisma.pengguna.findUnique({
         where: {
-          id,
+          licensePlate,
         },
       });
 
-      console.log("data customer with ID", customers);
       res.status(200).json(customers);
       return;
     } else {
-      const customers = await prisma.pengguna.findMany();
-      console.log("data customers", customers);
+      const customers = await prisma.pengguna.findMany({
+        where: {
+          trash: parseInt(trash),
+        },
+      });
+      // console.log("data customers", customers);
       res.status(200).json(customers);
     }
   },
 
   update: async (req, res) => {
-    const id = req.params.id;
-    const data = req.body;
+    const { licensePlate } = req.body;
 
     const customers = await prisma.pengguna.update({
       where: {
-        id,
+        licensePlate,
       },
-      data,
+      data: {
+        ...req.body,
+        trash: 1,
+      },
     });
     console.log("updated customer data", customers);
     res.status(200).json(customers);
   },
 
   destroy: async (req, res) => {
-    const id = req.params.id;
+    const { licensePlate } = req.query;
+
+    console.log("jalan", req.query);
     const customers = await prisma.pengguna.delete({
       where: {
-        id,
+        licensePlate,
       },
     });
     console.log("deleted", customers);
