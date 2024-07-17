@@ -1,61 +1,33 @@
-const database = require("../database/index");
+const prisma = require("../database/index");
 const { v4: uuid } = require("uuid");
 
 const getTransaction = async (req, res) => {
-  try {
-    const sql = `SELECT * FROM transaksi_parkir`;
-    database.query(sql, req, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json({
-          success: false,
-          message: "Failed to get park transaction data",
-        });
-        return;
-      }
+  const data = await prisma.transaction.findMany();
 
-      res.json({
-        success: true,
-        message: "Successfully get park transaction data",
-        data: result,
-      });
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
-  }
+  res.json({
+    success: true,
+    message: "Successfully get park transaction data",
+    data: data,
+  });
 };
 
 const insertParkTransaction = async (req, res) => {
-  const data = await req.body;
-  const { id_pegawai, plat_no } = data;
+  const { id_pegawai, plat_no } = req.body;
 
   const id_transaksi = `4P-${uuid()}`;
 
-  const sql = `INSERT INTO transaksi_parkir (id_transaksi, id_pegawai, plat_no) VALUES ('${id_transaksi}','${id_pegawai}', '${plat_no}')`;
-
-  database.query(sql, req, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.json({
-        success: false,
-        message: "Failed to insert park transaction data",
-      });
-      return;
-    }
-
-    const data = {
+  const data = await prisma.transaction.create({
+    data: {
       id: id_transaksi,
       id_pegawai,
       plat_no,
-    };
+    },
+  });
 
-    res.json({
-      success: true,
-      message: "Successfully insert park transaction data",
-      data: data,
-    });
+  res.json({
+    success: true,
+    message: "Successfully insert park transaction data",
+    data: data,
   });
 };
 
