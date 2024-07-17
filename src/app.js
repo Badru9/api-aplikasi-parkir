@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 const api = require("./api");
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello World ya!");
 });
 
 app.post("/api/admin/:id", upload.single("image"), async (req, res) => {
